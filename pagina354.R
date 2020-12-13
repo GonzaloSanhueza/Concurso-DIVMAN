@@ -1,16 +1,22 @@
+## Autor: Gonzalo Sanhueza
 ## Ejemplo Simulación de un componente
 
-## Un componente falla con una distribución exponencial con tiempo medio de falla de 500 h.
-## El proceso de reparación tiene una distribución normal con tiempo medio de reparación de 25 h. y desviación estandar de 5h.
-## Calcula el porcentaje de tiempo muerto en 2500 h.
+## - Un componente falla con una distribución exponencial con tiempo medio de 
+## falla de 500 h.
+## - El proceso de reparación tiene una distribución normal con tiempo medio 
+## de reparación de 25 h. y desviación estándar de 5h.
+## Calcular el porcentaje de tiempo de inactividad en 2500 h.
 
 ## Supuestos
-## La simulación converge a las 100 replicas
-## Si el tiempo de proceso excede las 2500 horas con la ultima simulación de tiempo de reparación, entonces el ultimo tiempo de reparación no se considera para el calculo del tiempo de proceso.
+## - La simulación converge a las 100 replicas.
+## - Si el tiempo de proceso excede las 2500 horas con la última simulación 
+## de tiempo de reparación, entonces el ultimo tiempo de reparación no se 
+## considera para el cálculo del tiempo de proceso.
 
 
 process_time <- c()
 downtime <- c()
+set.seed(2020) ## Fijar Semilla para obtener resultados reproducibles
 for(i in 1:100){
   process_time[i] = 0
   downtime[i] = 0
@@ -35,28 +41,5 @@ downtime
 
 downtime_pct = downtime/2500 *100
 downtime_pct
-
-
-## install.packages("ggplot2")
-
-library(ggplot2)
-
-theme_set(theme_classic())
-
-downtime_df <- data.frame(downtime_pct = downtime_pct)
-downtime_df$q <- ifelse(downtime_df$downtime_pct < quantile(downtime_pct, 0.025) | 
-                          downtime_df$downtime_pct > quantile(downtime_pct, 0.975), 
-                        "fuera", "dentro")
-
-downtime_df
-
-ggplot(data = downtime_df, mapping = aes(x = downtime_pct)) +
-  geom_histogram(bins = 15, color = "white", alpha = 0.5, aes(fill = q), show.legend = F) + 
-  geom_vline(xintercept = mean(downtime_pct), linetype = "dashed") +
-  scale_fill_manual(values = c(dentro = "dodgerblue4", fuera = "red")) +
-  labs(title = "Distribución de porcentaje de Downtime\ncon intervalo de confianza del 95%", x = "Porcentaje de Downtime",
-       y = "Frecuencia Absoluta")
-  
-
 
 
